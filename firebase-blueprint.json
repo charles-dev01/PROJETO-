@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "judging_configuration": {
+      "title": "Judging Configuration",
+      "description": "Global settings for the judging system",
+      "type": "object",
+      "properties": {
+        "isActive": { "type": "boolean", "description": "Whether the judging system is currently open" },
+        "title": { "type": "string", "description": "Title of the judging event" },
+        "description": { "type": "string", "description": "Detailed description of the event" },
+        "startDate": { "type": "string", "format": "date-time" },
+        "endDate": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["isActive", "title", "updatedAt"]
+    },
+    "criterion": {
+      "title": "Judging Criterion",
+      "description": "Individual criteria used for scoring",
+      "type": "object",
+      "properties": {
+        "label": { "type": "string", "description": "Name of the criterion (e.g., Exterior, Interior, Performance)" },
+        "weight": { "type": "number", "description": "Importance weight (0-1)" },
+        "maxScore": { "type": "number", "description": "Maximum possible score" },
+        "description": { "type": "string" }
+      },
+      "required": ["label", "weight", "maxScore"]
+    },
+    "submission": {
+      "title": "Submission",
+      "description": "An entry to be judged (e.g., a car listing)",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "judged"] },
+        "averageScore": { "type": "number" }
+      },
+      "required": ["title", "ownerId", "status"]
+    },
+    "evaluation": {
+      "title": "Evaluation",
+      "description": "A score given by a judge to a submission",
+      "type": "object",
+      "properties": {
+        "judgeId": { "type": "string" },
+        "submissionId": { "type": "string" },
+        "scores": {
+          "type": "object",
+          "description": "Map of criterion ID to score value"
+        },
+        "comment": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["judgeId", "submissionId", "scores", "updatedAt"]
+    },
+    "admin": {
+      "title": "Administrator",
+      "description": "Users with admin privileges",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["superadmin", "judge"] }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "judging_settings/global": {
+      "schema": "judging_configuration",
+      "description": "Singleton configuration for the judging system"
+    },
+    "criteria": {
+      "schema": "criterion",
+      "description": "List of criteria for judging"
+    },
+    "submissions": {
+      "schema": "submission",
+      "description": "Items to be judged"
+    },
+    "evaluations": {
+      "schema": "evaluation",
+      "description": "Judgement entries"
+    },
+    "admins": {
+      "schema": "admin",
+      "description": "User roles and permissions"
+    }
+  }
+}

@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
+@import "@fontsource/opendyslexic";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Unbounded", display;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 2.5rem;
+}
+
+@layer base {
+  :root {
+    --background: #F8F9FA;
+    --foreground: #1A1A1A;
+    --card: #FFFFFF;
+    --card-foreground: #1A1A1A;
+    --popover: #FFFFFF;
+    --popover-foreground: #1A1A1A;
+    --primary: #FFD600;
+    --secondary: #00E5FF;
+    --muted: #F1F3F5;
+    --muted-foreground: #6C757D;
+    --accent: #FF90E8;
+    --destructive: #FF4D4D;
+    --border: #E9ECEF;
+    --input: #E9ECEF;
+    --ring: #FFD600;
+  }
+
+  .dark {
+    --background: #0B0B0B;
+    --foreground: #F8F9FA;
+    --card: #151515;
+    --card-foreground: #F8F9FA;
+    --popover: #151515;
+    --popover-foreground: #F8F9FA;
+    --primary: #FFD600;
+    --secondary: #00E5FF;
+    --muted: #1F1F1F;
+    --muted-foreground: #ADB5BD;
+    --accent: #FF90E8;
+    --destructive: #FF4D4D;
+    --border: #2D2D2D;
+    --input: #2D2D2D;
+    --ring: #FFD600;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-500 antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  /* Calm shadows and borders instead of neubrutal */
+  .calm-card {
+    @apply border border-border bg-card shadow-sm transition-all duration-300;
+  }
+  .calm-card:hover {
+    @apply shadow-xl shadow-black/5 dark:shadow-white/5;
+  }
+  
+  /* Accessibility Classes */
+  .dyslexic, .dyslexic * {
+    font-family: "OpenDyslexic", system-ui, sans-serif !important;
+    letter-spacing: 0.05em !important;
+    line-height: 1.8 !important;
+    word-spacing: 0.2em !important;
+  }
+  
+  .high-contrast {
+    --background: #FFFFFF !important;
+    --foreground: #000000 !important;
+    --card: #FFFFFF !important;
+    --card-foreground: #000000 !important;
+    --primary: #000000 !important;
+    --secondary: #000000 !important;
+    --muted: #F0F0F0 !important;
+    --muted-foreground: #000000 !important;
+    --border: #000000 !important;
+    --ring: #000000 !important;
+  }
+  
+  .dark.high-contrast {
+    --background: #000000 !important;
+    --foreground: #FFFFFF !important;
+    --card: #000000 !important;
+    --card-foreground: #FFFFFF !important;
+    --primary: #FFFFFF !important;
+    --secondary: #FFFFFF !important;
+    --muted: #1A1A1A !important;
+    --muted-foreground: #FFFFFF !important;
+    --border: #FFFFFF !important;
+    --ring: #FFFFFF !important;
+  }
+
+  .high-contrast * {
+    border-color: var(--border) !important;
+    outline-color: var(--border) !important;
+    background-image: none !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  .reduce-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Skip Link */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-6 focus:py-3 focus:bg-primary focus:text-black focus:font-black focus:rounded-xl focus:shadow-2xl focus:outline-none focus:ring-4 focus:ring-primary/50;
+  }
+}

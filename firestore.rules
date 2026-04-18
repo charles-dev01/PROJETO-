@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helper Functions ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Validations ---
+    function isValidSubmission(data) {
+      return data.title is string && data.title.size() <= 100 &&
+             data.ownerId is string && data.status in ['pending', 'judged'];
+    }
+
+    function isValidEvaluation(data) {
+      return data.judgeId == request.auth.uid &&
+             data.submissionId is string &&
+             data.scores is map &&
+             data.updatedAt == request.time;
+    }
+
+    // --- Rules ---
+
+    // Admin collection: bootstrapping is usually done via console or script,
+    // but here we restrict write to admins only.
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Global Settings
+    match /judging_settings/global {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Criteria
+    match /criteria/{criterionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Submissions
+    match /submissions/{submissionId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isEmailVerified() && isValidSubmission(request.resource.data);
+      allow update: if (isAdmin() || isOwner(resource.data.ownerId)) && isValidSubmission(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Evaluations
+    match /evaluations/{evaluationId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isEmailVerified() && isValidEvaluation(request.resource.data);
+      allow update: if isSignedIn() && isOwner(resource.data.judgeId) && isValidEvaluation(request.resource.data);
+      allow delete: if isAdmin();
+    }
+  }
+}
